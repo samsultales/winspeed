@@ -1,0 +1,646 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Dokumentasi API",
+        "description": "Lorem Ipsum",
+        "contact": {
+            "email": "ogya.surabaya@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Demo Integrasi API Server Laravel"
+        }
+    ],
+    "paths": {
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get token auth from login",
+                "description": "mendapatkan token dari login",
+                "operationId": "login",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "email",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "password",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "message": "Login success",
+                                    "access_token": "",
+                                    "token_type": ""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrasi/check": {
+            "get": {
+                "tags": [
+                    "General"
+                ],
+                "summary": "Cek Server Web API",
+                "description": "Menguji integrasi dengan server web API",
+                "operationId": "check",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Cek integrasi API berhasil"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/integrasi/getlistunitkerja": {
+            "get": {
+                "tags": [
+                    "Unit Kerja"
+                ],
+                "summary": "Get List Unit Kerja",
+                "description": "Mendapatkan list unit kerja",
+                "operationId": "listUnitKerja",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Get list unit kerja berhasil",
+                                    "data": [
+                                        {
+                                            "id": 0,
+                                            "kode_unit_kerja": "",
+                                            "nama_unit_kerja": "",
+                                            "flag_aktif": 0,
+                                            "seq_server": 0,
+                                            "key": ""
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/integrasi/setflagunitkerja": {
+            "post": {
+                "tags": [
+                    "Unit Kerja"
+                ],
+                "summary": "Set Flag Unit Kerja",
+                "description": "Update flag unit kerja",
+                "operationId": "flagUnitKerja",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_unit_kerja": {
+                                        "type": "integer"
+                                    },
+                                    "seq_server": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id_unit_kerja": 0,
+                                    "seq_server": 0
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Data berhasil disimpan",
+                                    "data": 1
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/integrasi/upsertunitkerjaaktif": {
+            "post": {
+                "tags": [
+                    "Unit Kerja"
+                ],
+                "summary": "Insert or Update Unit Kerja Aktif",
+                "description": "insert unit kerja aktif jika belum ada atau update unit kerja aktif jika sudah ada",
+                "operationId": "insUnitKerjaAktif",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_unit_kerja": {
+                                        "type": "integer"
+                                    },
+                                    "seq_server": {
+                                        "type": "integer"
+                                    },
+                                    "ip_server_site": {
+                                        "type": "string"
+                                    },
+                                    "nama_server_site": {
+                                        "type": "string"
+                                    },
+                                    "serial_server_site": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id_unit_kerja": 0,
+                                    "seq_server": 0,
+                                    "ip_server_site": "",
+                                    "nama_server_site": "",
+                                    "serial_server_site": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Data berhasil disimpan",
+                                    "data": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/integrasi/upduserlocalinfo": {
+            "put": {
+                "tags": [
+                    "Unit Kerja"
+                ],
+                "summary": "Update Info User Local Unit Kerja",
+                "description": "Update info user local unit kerja",
+                "operationId": "userUnitKerja",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_unit_kerja": {
+                                        "type": "integer"
+                                    },
+                                    "seq_server": {
+                                        "type": "integer"
+                                    },
+                                    "user_local": {
+                                        "type": "string"
+                                    },
+                                    "password_local": {
+                                        "type": "string"
+                                    },
+                                    "email_local": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id_unit_kerja": 0,
+                                    "seq_server": 0,
+                                    "user_local": "",
+                                    "password_local": "",
+                                    "email_local": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Data berhasil disimpan",
+                                    "data": 1
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/integrasi/insloggerlocal": {
+            "post": {
+                "tags": [
+                    "Unit Kerja"
+                ],
+                "summary": "Insert Logger Local",
+                "description": "Insert Logger Local",
+                "operationId": "insLoggerLocal",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_unit_kerja": {
+                                        "type": "integer"
+                                    },
+                                    "seq_server": {
+                                        "type": "integer"
+                                    },
+                                    "pesan": {
+                                        "type": "string"
+                                    },
+                                    "date_pesan": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id_unit_kerja": 0,
+                                    "seq_server": 0,
+                                    "pesan": "",
+                                    "date_pesan": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Data berhasil disimpan",
+                                    "data": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/integrasi/sendfilesound": {
+            "post": {
+                "tags": [
+                    "Recording"
+                ],
+                "summary": "Kirim File Recording",
+                "description": "Kirim File Recording",
+                "operationId": "storeFile",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "id_unit_kerja": {
+                                        "type": "integer"
+                                    },
+                                    "seq_unit_kerja": {
+                                        "type": "integer"
+                                    },
+                                    "filesound": {
+                                        "type": "file"
+                                    },
+                                    "filesize": {
+                                        "description": "ukuran dalam MegaBytes (MB)",
+                                        "type": "string"
+                                    },
+                                    "created_file": {
+                                        "type": "string"
+                                    },
+                                    "start_time": {
+                                        "type": "string"
+                                    },
+                                    "end_time": {
+                                        "type": "string"
+                                    },
+                                    "nm_channel": {
+                                        "type": "string"
+                                    },
+                                    "nm_sound_card": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Data berhasil disimpan",
+                                    "data": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/integrasi/getintervalrecording": {
+            "get": {
+                "tags": [
+                    "Recording"
+                ],
+                "summary": "Get Interval Recording",
+                "description": "Mendapatkan interval recording",
+                "operationId": "intervalRecording",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Get interval recording berhasil",
+                                    "data": {
+                                        "interval": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/integrasi/getlocalpassword": {
+            "get": {
+                "tags": [
+                    "General"
+                ],
+                "summary": "Kirim email permintaan lupa password",
+                "description": "Kirim email permintaan lupa password",
+                "operationId": "lupapassword",
+                "parameters": [
+                    {
+                        "name": "id_unit_kerja",
+                        "in": "query",
+                        "description": "id unit kerja",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "seq_unit_kerja",
+                        "in": "query",
+                        "description": "sequence unit kerja",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Kirim email local password berhasil",
+                                    "data": []
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/integrasi/getlistserialnumber": {
+            "get": {
+                "tags": [
+                    "Unit Kerja"
+                ],
+                "summary": "Mendapatkan list serial number pada unit kerja",
+                "description": "Mendapatkan list serial number pada unit kerja",
+                "operationId": "listserialnumber",
+                "parameters": [
+                    {
+                        "name": "id_unit_kerja",
+                        "in": "query",
+                        "description": "id unit kerja",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Get List serial number berhasil",
+                                    "data": []
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/integrasi/insstatusserverlocal": {
+            "post": {
+                "tags": [
+                    "Unit Kerja"
+                ],
+                "summary": "Insert Status Server Local",
+                "description": "Insert Status Server Local",
+                "operationId": "insStsSrvLocal",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id_unit_kerja": {
+                                        "type": "integer"
+                                    },
+                                    "seq_server": {
+                                        "type": "integer"
+                                    },
+                                    "pesan": {
+                                        "type": "string"
+                                    },
+                                    "date_pesan": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id_unit_kerja": 0,
+                                    "seq_server": 0,
+                                    "pesan": "",
+                                    "date_pesan": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Data berhasil disimpan",
+                                    "data": true
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "apiKey",
+                "description": "Sanctum token api format (Bearer token)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "General",
+            "description": "General"
+        },
+        {
+            "name": "Unit Kerja",
+            "description": "Unit Kerja"
+        },
+        {
+            "name": "Recording",
+            "description": "Recording"
+        }
+    ]
+}
