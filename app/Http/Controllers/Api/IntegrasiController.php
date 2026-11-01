@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEmail;
+use App\Jobs\TranscribeFileSound;
 
 class IntegrasiController extends Controller
 {
@@ -626,8 +627,8 @@ class IntegrasiController extends Controller
             $response['data'] = true;
 
             if (file_exists(storage_path("{$pathfile}/{$image->getClientOriginalName()}"))) {
-                $unitkerja = DB::table('trn_file_sound')
-                    ->insert([
+                $fileSoundId = DB::table('trn_file_sound')
+                    ->insertGetId([
                         'id_unit_kerja_aktif' => $unitkerjaaktif->key_id,
                         'nm_file_sound' => $nmfile,
                         'created_file' => DB::raw("to_timestamp('$request->created_file', 'YYYY-MM-DD hh24:mi')"),
@@ -641,10 +642,17 @@ class IntegrasiController extends Controller
                         'date_intg' => DB::raw('now()'),
                         'created_at' => DB::raw('now()'),
                         'created_by' => 'API-'.__METHOD__
-                    ]);
-                
+                    ], 'key_id');
+
                 DB::commit();
-                $data = $unitkerja;
+                $data = true;
+
+                // antrikan transkrip Whisper; gagal antri tidak membatalkan upload (diambil ulang oleh transkrip:job)
+                try {
+                    TranscribeFileSound::dispatch((int) $fileSoundId);
+                } catch (\Throwable $e) {
+                    \Log::error("Gagal antri transkrip trn_file_sound {$fileSoundId}: " . $e->getMessage());
+                }
                 // $data = $pathfile;
                 // $data = storage_path("{$pathfile}/{$image->getClientOriginalName()}");
 

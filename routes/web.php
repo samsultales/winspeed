@@ -107,4 +107,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/getnotif', [AdminController::class, 'getNotif'])->name('notif.getnotif');
     Route::get('/shownotif', [AdminController::class, 'showNotif'])->name('notif.index');
 
+    Route::post('/transkrip/update', [AdminController::class, 'updateTranskrip'])->name('transkrip.update');
+
 });

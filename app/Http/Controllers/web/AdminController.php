@@ -181,6 +181,25 @@ class AdminController extends Controller
         }
     }
 
+    public function updateTranskrip(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required|integer|exists:trn_file_sound,key_id',
+            'srt' => 'required|string',
+        ]);
+
+        DB::table('trn_file_sound')
+            ->where('key_id', $validated['id'])
+            ->update([
+                'transkrip' => 1,
+                'transkrip_text' => trim($validated['srt']),
+                'updated_at' => now(),
+                'updated_by' => $request->user()->username ?? $request->user()->name,
+            ]);
+
+        return response()->json(['success' => true]);
+    }
+
     public function getDownload(Request $request)
     {
         //PDF file is stored under project/public/download/info.pdf

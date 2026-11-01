@@ -341,7 +341,7 @@
                     $('#chanel').html(data[0].chanel);
                     $('#soundcard').html(data[0].nm_sound_card);
                     $('#size').html(data[0].ukuran + " Mbytes");
-                    loadSubtitle(data[0].transkrip_text);
+                    loadSubtitle(data[0].transkrip_text, data[0].key_id);
 
                 });
 
@@ -603,7 +603,24 @@
         return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
     }
 
-    function loadSubtitle(srt) {
+    let subtitleFileId = null;
+    const canEditTranskrip = @json(auth()->check());
+
+    function secondsToSrtTime(sec) {
+        const ms = Math.round(sec * 1000);
+        const pad = (n, l) => String(n).padStart(l || 2, '0');
+        return pad(Math.floor(ms / 3600000)) + ':' + pad(Math.floor(ms / 60000) % 60) + ':' +
+            pad(Math.floor(ms / 1000) % 60) + ',' + pad(ms % 1000, 3);
+    }
+
+    function buildSrt(cues) {
+        return cues.map((c, i) =>
+            (i + 1) + '\n' + secondsToSrtTime(c.start) + ' --> ' + secondsToSrtTime(c.end) + '\n' + c.text
+        ).join('\n\n');
+    }
+
+    function loadSubtitle(srt, fileId) {
+        subtitleFileId = fileId || null;
         subtitleCues = srt ? parseSrt(srt) : [];
         activeCueIndex = -1;
         $('#subtitle').text('');
@@ -613,12 +630,77 @@
         subtitleCues.forEach(function(cue, i) {
             const row = $('<div class="cue"></div>').attr('data-index', i);
             row.append($('<span class="cue-time"></span>').text(formatCueTime(cue.start)));
-            row.append($('<span></span>').text(cue.text));
+            row.append($('<span class="cue-text"></span>').text(cue.text));
+            if (canEditTranskrip) {
+                row.append($('<button type="button" class="cue-edit" title="Edit transkrip"><i class="fas fa-pen"></i></button>'));
+            }
             row.on('click', function() {
+                if (row.hasClass('editing')) return;
+                // hanya pindah posisi; lanjut play jika player memang sedang berjalan
                 audioEl.currentTime = cue.start;
-                audioEl.play();
+            });
+            row.find('.cue-edit').on('click', function(e) {
+                e.stopPropagation();
+                editCue(row, i);
             });
             $('#subtitleList').append(row);
+        });
+    }
+
+    function editCue(row, i) {
+        if (row.hasClass('editing')) return;
+        row.addClass('editing');
+        const textEl = row.find('.cue-text').hide();
+        row.find('.cue-edit').hide();
+
+        const input = $('<input type="text" class="form-control form-control-sm cue-input">').val(subtitleCues[i].text);
+        const btnSave = $('<button type="button" class="btn btn-sm btn-success" title="Simpan"><i class="fas fa-check"></i></button>');
+        const btnCancel = $('<button type="button" class="btn btn-sm btn-secondary" title="Batal"><i class="fas fa-times"></i></button>');
+        const editor = $('<span class="cue-editor"></span>').append(input, btnSave, btnCancel);
+        textEl.after(editor);
+        input.trigger('focus').on('click', e => e.stopPropagation());
+
+        function close() {
+            editor.remove();
+            textEl.show();
+            row.find('.cue-edit').show();
+            row.removeClass('editing');
+        }
+
+        function save() {
+            const text = input.val().trim();
+            if (!text) {
+                toastr.error('Teks transkrip tidak boleh kosong');
+                return;
+            }
+            if (text === subtitleCues[i].text) return close();
+
+            const cues = subtitleCues.map((c, k) => k === i ? Object.assign({}, c, { text: text }) : c);
+            btnSave.prop('disabled', true);
+            $.ajax({
+                url: "{{ route('transkrip.update') }}",
+                type: 'POST',
+                headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+                data: { id: subtitleFileId, srt: buildSrt(cues) },
+                success: function() {
+                    subtitleCues = cues;
+                    textEl.text(text);
+                    if (activeCueIndex === i) $('#subtitle').text(text);
+                    close();
+                    toastr.success('Transkrip disimpan');
+                },
+                error: function(xhr) {
+                    btnSave.prop('disabled', false);
+                    toastr.error((xhr.responseJSON && xhr.responseJSON.message) || 'Gagal menyimpan transkrip');
+                },
+            });
+        }
+
+        btnSave.on('click', e => { e.stopPropagation(); save(); });
+        btnCancel.on('click', e => { e.stopPropagation(); close(); });
+        input.on('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); save(); }
+            if (e.key === 'Escape') { e.preventDefault(); close(); }
         });
     }
 
@@ -706,6 +788,38 @@
 
     .subtitle-list .cue.active {
         background-color: #ffe08a;
+    }
+
+    .subtitle-list .cue {
+        display: flex;
+        align-items: center;
+    }
+
+    .subtitle-list .cue-text {
+        flex: 1;
+    }
+
+    .subtitle-list .cue-edit {
+        border: 0;
+        background: none;
+        color: #888;
+        padding: 2px 8px;
+        visibility: hidden;
+    }
+
+    .subtitle-list .cue:hover .cue-edit,
+    .subtitle-list .cue.active .cue-edit {
+        visibility: visible;
+    }
+
+    .subtitle-list .cue-edit:hover {
+        color: #333;
+    }
+
+    .subtitle-list .cue-editor {
+        flex: 1;
+        display: flex;
+        gap: 4px;
     }
 
     .subtitle-list .cue-time {
